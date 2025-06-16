@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Channel-Based Transparency</title>
+    <style>
+        body {
+          margin: 0;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          height: 100vh;
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f9;
+        }
+
+        @media (max-width: 800px) {
+          body {
+            flex-direction: column;
+          }
+
+          .sidebar, .content {
+            width: 100% !important;
+            height: auto;
+          }
+        }
+
+        .sidebar {
+          width: 35%;
+          padding: 1rem;
+          box-sizing: border-box;
+          background-color: #ffffff;
+          border-right: 1px solid #ccc;
+          overflow-y: auto;
+        }
+
+        .content {
+          width: 65%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+          box-sizing: border-box;
+        }
+
+        .controls {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .channel-group {
+          border-bottom: 1px solid #eee;
+          padding-bottom: 0.5rem;
+        }
+
+        .channel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: bold;
+          margin-bottom: 0.3rem;
+        }
+
+        h2 {
+          font-size: 1.2rem;
+          margin-bottom: 1rem;
+          color: #333;
+        }
+
+        label {
+          font-size: 14px;
+          color: #555;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.3rem;
+        }
+
+        .percentage-section,
+        .analyzed-section {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        input[type="number"] {
+          width: 60px;
+          padding: 0.3rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        input[type="range"] {
+          flex-grow: 1;
+        }
+
+        .lock {
+          margin-left: auto;
+        }
+
+        .channel-toggle {
+          margin-left: 10px;
+        }
+
+        button {
+          padding: 0.5rem 1rem;
+          font-size: 14px;
+          color: #fff;
+          background-color: #007bff;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          text-align: center;
+        }
+
+        button:hover {
+          background-color: #0056b3;
+        }
+
+        .preset-buttons {
+          margin-top: 1rem;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .preset-buttons button {
+          flex: 1 1 calc(20% - 10px);
+          padding: 0.3rem 0;
+          font-size: 12px;
+        }
+
+        .extra-buttons {
+          padding-top: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .container {
+          position: relative;
+          width: 90vmin;
+          height: 90vmin;
+          max-width: 100%;
+          max-height: 100%;
+          border: 2px solid #ccc;
+          overflow: hidden;
+        }
+
+        .image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(100, 1fr);
+          grid-template-rows: repeat(100, 1fr);
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+
+        .square {
+          width: 100%;
+          height: 100%;
+          background-color: black;
+          transition: background-color 0.3s ease;
+        }
+
+        .transparent {
+          background-color: transparent;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>Communication Channel Inputs</h2>
+    <div class="controls" id="controls"></div>
+    <button onclick="resetToOriginal()">Reset to Original Values</button>
+    <div class="preset-buttons">
+        <button onclick="setAnalyzedPercentage(10)">10%</button>
+        <button onclick="setAnalyzedPercentage(20)">20%</button>
+        <button onclick="setAnalyzedPercentage(30)">30%</button>
+        <button onclick="setAnalyzedPercentage(40)">40%</button>
+        <button onclick="setAnalyzedPercentage(50)">50%</button>
+        <button onclick="setAnalyzedPercentage(60)">60%</button>
+        <button onclick="setAnalyzedPercentage(70)">70%</button>
+        <button onclick="setAnalyzedPercentage(80)">80%</button>
+        <button onclick="setAnalyzedPercentage(90)">90%</button>
+        <button onclick="setAnalyzedPercentage(100)">100%</button>
+    </div>
+    <div class="extra-buttons">
+        <button onclick="distributeRemaining()">Distribute Remaining %</button>
+        <button onclick="reshuffle()">Reshuffle</button>
+    </div>
+</div>
+
+<div class="content">
+    <h2>Visualization</h2>
+    <div class="container">
+        <img src="FinServ - Customer Service & Account Support.png" alt="Image" class="image" />
+        <div class="grid" id="grid"></div>
+    </div>
+</div>
+
+<script>
+    const channels = [
+      { key: 'calls', name: 'Calls', percentage: 45, analyzed: 5 },
+      { key: 'email', name: 'Email', percentage: 25, analyzed: 10 },
+      { key: 'chat', name: 'Chat', percentage: 10, analyzed: 4 },
+      { key: 'external', name: 'External', percentage: 10, analyzed: 12 },
+      { key: 'internal', name: 'Internal', percentage: 10, analyzed: 2 }
+    ];
+
+    const controlsContainer = document.getElementById('controls');
+    channels.forEach(({ key, name, percentage, analyzed }) => {
+      const group = document.createElement('div');
+      group.classList.add('channel-group');
+
+      group.innerHTML = `
+        <div class="channel-header">
+          <span>${name}</span>
+          <label><input type="checkbox" id="${key}-enabled" checked class="channel-toggle" onchange="toggleChannel('${key}')"> Enabled</label>
+        </div>
+        <div class="percentage-section">
+          <label>${name} %:</label>
+          <input type="number" id="${key}" min="0" max="100" value="${percentage}" onchange="syncSlider('${key}')">
+          <input type="range" id="${key}-slider" min="0" max="100" value="${percentage}" oninput="syncInput('${key}')">
+          <input type="checkbox" id="${key}-lock" class="lock" title="Lock Channel %">
+        </div>
+        <div class="analyzed-section">
+          <label>Analyzed %:</label>
+          <input type="number" id="${key}-analyzed" min="0" max="100" value="${analyzed}">
+        </div>
+      `;
+
+      controlsContainer.appendChild(group);
+    });
+
+    function syncSlider(key) {
+      const value = document.getElementById(key).value;
+      document.getElementById(`${key}-slider`).value = value;
+    }
+
+    function syncInput(key) {
+      const value = document.getElementById(`${key}-slider`).value;
+      document.getElementById(key).value = value;
+    }
+
+    function toggleChannel(key) {
+      const enabled = document.getElementById(`${key}-enabled`).checked;
+      if (!enabled) {
+        document.getElementById(key).value = 0;
+        document.getElementById(`${key}-slider`).value = 0;
+      }
+    }
+
+    function resetToOriginal() {
+      channels.forEach(({ key, percentage, analyzed }) => {
+        document.getElementById(key).value = percentage;
+        document.getElementById(`${key}-slider`).value = percentage;
+        document.getElementById(`${key}-analyzed`).value = analyzed;
+        document.getElementById(`${key}-lock`).checked = false;
+        document.getElementById(`${key}-enabled`).checked = true;
+      });
+    }
+
+    function setAnalyzedPercentage(value) {
+      channels.forEach(({ key }) => {
+        document.getElementById(`${key}-analyzed`).value = value;
+      });
+    }
+
+    function distributeRemaining() {
+      let used = 0;
+      const editable = [];
+
+      channels.forEach(({ key }) => {
+        if (!document.getElementById(`${key}-enabled`).checked) return;
+        const input = document.getElementById(key);
+        const slider = document.getElementById(`${key}-slider`);
+        const locked = document.getElementById(`${key}-lock`).checked;
+        const val = parseInt(input.value) || 0;
+
+        if (locked) {
+          used += val;
+        } else {
+          editable.push({ key, input, slider });
+        }
+      });
+
+      let remaining = 100 - used;
+      if (remaining < 0 || editable.length === 0) return;
+
+      const base = Math.floor(remaining / editable.length);
+      let leftover = remaining % editable.length;
+
+      editable.forEach(({ input, slider }) => {
+        const value = base + (leftover > 0 ? 1 : 0);
+        input.value = value;
+        slider.value = value;
+        if (leftover > 0) leftover--;
+      });
+    }
+
+    const grid = document.getElementById('grid');
+    const gridSize = 100;
+    const squares = [];
+    for (let i = 0; i < gridSize * gridSize; i++) {
+      const square = document.createElement('div');
+      square.classList.add('square');
+      grid.appendChild(square);
+      squares.push(square);
+    }
+
+    function reshuffle() {
+      squares.forEach(sq => sq.classList.remove('transparent'));
+
+      const totalSquares = gridSize * gridSize;
+      let totalPercentage = 0;
+      const counts = {}, analyzedCounts = {}, segments = {};
+
+      channels.forEach(({ key }) => {
+        if (!document.getElementById(`${key}-enabled`).checked) return;
+        const percent = parseInt(document.getElementById(key).value) || 0;
+        const analyzed = parseInt(document.getElementById(`${key}-analyzed`).value) || 0;
+        totalPercentage += percent;
+        counts[key] = Math.round((percent / 100) * totalSquares);
+        analyzedCounts[key] = Math.round((analyzed / 100) * counts[key]);
+      });
+
+      if (totalPercentage !== 100) {
+        alert('The total percentage of communication channels must equal 100%.');
+        return;
+      }
+
+      let start = 0;
+      channels.forEach(({ key }) => {
+        if (!document.getElementById(`${key}-enabled`).checked) return;
+        segments[key] = squares.slice(start, start + counts[key]);
+        start += counts[key];
+      });
+
+      channels.forEach(({ key }) => {
+        if (!document.getElementById(`${key}-enabled`).checked) return;
+        const segment = segments[key];
+        const reveal = new Set();
+        while (reveal.size < analyzedCounts[key]) {
+          reveal.add(Math.floor(Math.random() * segment.length));
+        }
+        reveal.forEach(i => segment[i].classList.add('transparent'));
+      });
+    }
+</script>
+</body>
+</html>
