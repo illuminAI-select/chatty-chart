@@ -14,7 +14,8 @@
     <div class="app-container">
         <!-- Sidebar Controls -->
         <aside class="sidebar">
-            <h2>Communication Channel Inputs</h2>
+            <h2>Adjust Your Channels</h2>
+            <p class="help-text">Set how much data comes from each channel, and how much of it you can see through the grid.</p>
 
             <!-- Channel controls will be dynamically generated -->
             <div class="controls" id="controls"></div>
@@ -25,26 +26,30 @@
             </button>
 
             <!-- Preset Buttons -->
-            <div class="preset-buttons">
-                <button onclick="setAnalyzedPercentage(10)" aria-label="Set analyzed to 10%">10%</button>
-                <button onclick="setAnalyzedPercentage(20)" aria-label="Set analyzed to 20%">20%</button>
-                <button onclick="setAnalyzedPercentage(30)" aria-label="Set analyzed to 30%">30%</button>
-                <button onclick="setAnalyzedPercentage(40)" aria-label="Set analyzed to 40%">40%</button>
-                <button onclick="setAnalyzedPercentage(50)" aria-label="Set analyzed to 50%">50%</button>
-                <button onclick="setAnalyzedPercentage(60)" aria-label="Set analyzed to 60%">60%</button>
-                <button onclick="setAnalyzedPercentage(70)" aria-label="Set analyzed to 70%">70%</button>
-                <button onclick="setAnalyzedPercentage(80)" aria-label="Set analyzed to 80%">80%</button>
-                <button onclick="setAnalyzedPercentage(90)" aria-label="Set analyzed to 90%">90%</button>
-                <button onclick="setAnalyzedPercentage(100)" aria-label="Set analyzed to 100%">100%</button>
+            <div class="preset-section">
+                <h3 class="section-title">Quick Visibility Presets</h3>
+                <p class="section-help">Set how much you can see for all channels</p>
+                <div class="preset-buttons">
+                    <button onclick="setAnalyzedPercentage(10)" aria-label="Set visibility to 10%">10%</button>
+                    <button onclick="setAnalyzedPercentage(20)" aria-label="Set visibility to 20%">20%</button>
+                    <button onclick="setAnalyzedPercentage(30)" aria-label="Set visibility to 30%">30%</button>
+                    <button onclick="setAnalyzedPercentage(40)" aria-label="Set visibility to 40%">40%</button>
+                    <button onclick="setAnalyzedPercentage(50)" aria-label="Set visibility to 50%">50%</button>
+                    <button onclick="setAnalyzedPercentage(60)" aria-label="Set visibility to 60%">60%</button>
+                    <button onclick="setAnalyzedPercentage(70)" aria-label="Set visibility to 70%">70%</button>
+                    <button onclick="setAnalyzedPercentage(80)" aria-label="Set visibility to 80%">80%</button>
+                    <button onclick="setAnalyzedPercentage(90)" aria-label="Set visibility to 90%">90%</button>
+                    <button onclick="setAnalyzedPercentage(100)" aria-label="Set visibility to 100%">100%</button>
+                </div>
             </div>
 
             <!-- Extra Action Buttons -->
             <div class="extra-buttons">
-                <button onclick="distributeRemaining()" aria-label="Distribute remaining percentage">
-                    Distribute Remaining %
+                <button onclick="distributeRemaining()" aria-label="Distribute remaining percentage" class="secondary-btn">
+                    Auto-Balance Channels
                 </button>
-                <button onclick="reshuffle()" aria-label="Reshuffle visualization">
-                    Reshuffle
+                <button onclick="reshuffle()" aria-label="Update visualization" class="primary-btn">
+                    Update Visualization
                 </button>
             </div>
         </aside>

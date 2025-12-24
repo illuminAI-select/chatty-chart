@@ -63,11 +63,38 @@ body {
 h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+h3.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+  background: none;
+  -webkit-text-fill-color: var(--text-primary);
+}
+
+.help-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.section-help {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.preset-section {
+  margin-top: 1.5rem;
 }
 
 /* Channel Groups */
@@ -97,17 +124,25 @@ h2 {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  font-size: 14px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.channel-name {
+  font-weight: 700;
+  font-size: 16px;
   color: var(--text-primary);
 }
 
-.channel-header label {
+.toggle-label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 /* Form Controls - Mobile Optimized */
@@ -121,29 +156,113 @@ label {
   font-weight: 500;
 }
 
-.percentage-section,
-.analyzed-section {
+.control-row {
+  margin-bottom: 1rem;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 
-.percentage-section label,
-.analyzed-section label {
-  flex-shrink: 0;
-  min-width: 80px;
+.control-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
   margin: 0;
 }
 
+.label-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.label-help {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.stepper-btn {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-elevated);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.stepper-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.stepper-btn:active {
+  transform: translateY(0);
+}
+
+.percentage-symbol {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 20px;
+}
+
+.lock-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  cursor: pointer;
+}
+
+.lock-checkbox {
+  display: none;
+}
+
+.lock-icon {
+  font-size: 18px;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+  user-select: none;
+}
+
+.lock-checkbox:checked + .lock-icon {
+  opacity: 1;
+}
+
+.desktop-only {
+  display: none;
+}
+
 input[type="number"] {
-  width: 65px;
+  flex: 1;
+  max-width: 80px;
   padding: 0.625rem;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
-  font-size: 16px; /* Prevents zoom on iOS */
+  font-size: 18px; /* Prevents zoom on iOS */
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   background: var(--surface);
   color: var(--text-primary);
   transition: all 0.2s ease;
@@ -154,6 +273,17 @@ input[type="number"]:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 input[type="range"] {
@@ -202,17 +332,12 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  min-width: 44px;
-  min-height: 44px;
+  width: 20px;
+  height: 20px;
+  min-width: 40px;
+  min-height: 40px;
   cursor: pointer;
   accent-color: var(--primary-color);
-}
-
-.lock {
-  margin-left: auto;
-  flex-shrink: 0;
 }
 
 /* Buttons */
@@ -239,6 +364,22 @@ button:hover {
 
 button:active {
   transform: translateY(0);
+}
+
+.primary-btn {
+  background: var(--primary-gradient);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+}
+
+.secondary-btn {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+}
+
+.secondary-btn:hover {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
 }
 
 .preset-buttons {
@@ -367,10 +508,20 @@ button:active {
     min-height: 100vh;
   }
 
+  .desktop-only {
+    display: block;
+  }
+
+  .control-row {
+    position: relative;
+  }
+
   input[type="range"] {
     height: 6px;
     padding: 0;
     min-height: auto;
+    margin-top: 0.5rem;
+    width: calc(100% - 60px);
   }
 
   input[type="range"]::-webkit-slider-thumb {
@@ -391,9 +542,17 @@ button:active {
   }
 
   input[type="number"] {
-    font-size: 14px;
+    font-size: 16px;
     min-height: auto;
     padding: 0.5rem;
+    max-width: 70px;
+  }
+
+  .stepper-btn {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    font-size: 18px;
   }
 
   button {
@@ -423,6 +582,18 @@ button:active {
     height: 90vmin;
     max-height: 85vh;
     border-radius: var(--radius-lg);
+  }
+
+  .help-text {
+    font-size: 13px;
+  }
+
+  .label-text {
+    font-size: 12px;
+  }
+
+  .label-help {
+    font-size: 10px;
   }
 }
 
