@@ -146,6 +146,8 @@ function setAnalyzedPercentage(value) {
   channels.forEach(({ key }) => {
     document.getElementById(`${key}-analyzed`).value = value;
   });
+  // Auto-update visualization after preset selection
+  debouncedReshuffle();
 }
 
 /**
@@ -202,56 +204,122 @@ function initializeGrid() {
 }
 
 /**
+ * Fisher-Yates shuffle to select random indices efficiently
+ */
+function getRandomIndices(max, count) {
+  if (count >= max) {
+    return Array.from({ length: max }, (_, i) => i);
+  }
+
+  const indices = Array.from({ length: max }, (_, i) => i);
+  const selected = [];
+
+  for (let i = 0; i < count; i++) {
+    const randomIndex = i + Math.floor(Math.random() * (max - i));
+    [indices[i], indices[randomIndex]] = [indices[randomIndex], indices[i]];
+    selected.push(indices[i]);
+  }
+
+  return selected;
+}
+
+/**
+ * Debounce function to limit rapid successive calls
+ */
+let reshuffleTimeout = null;
+let isReshuffling = false;
+
+function debouncedReshuffle(immediate = false) {
+  if (reshuffleTimeout) {
+    clearTimeout(reshuffleTimeout);
+  }
+
+  if (immediate) {
+    reshuffle();
+  } else {
+    reshuffleTimeout = setTimeout(() => {
+      reshuffle();
+    }, 300);
+  }
+}
+
+/**
  * Reshuffle the grid based on current channel settings
  */
 function reshuffle() {
-  // Reset all squares
-  squares.forEach(sq => sq.classList.remove('transparent'));
-
-  const totalSquares = gridSize * gridSize;
-  let totalPercentage = 0;
-  const counts = {};
-  const analyzedCounts = {};
-  const segments = {};
-
-  // Calculate counts for each channel
-  channels.forEach(({ key }) => {
-    if (!document.getElementById(`${key}-enabled`).checked) return;
-
-    const percent = parseInt(document.getElementById(key).value) || 0;
-    const analyzed = parseInt(document.getElementById(`${key}-analyzed`).value) || 0;
-
-    totalPercentage += percent;
-    counts[key] = Math.round((percent / 100) * totalSquares);
-    analyzedCounts[key] = Math.round((analyzed / 100) * counts[key]);
-  });
-
-  // Validate total percentage
-  if (totalPercentage !== 100) {
-    alert('The total percentage of communication channels must equal 100%.');
+  // Prevent multiple simultaneous updates
+  if (isReshuffling) {
     return;
   }
 
-  // Assign segments to each channel
-  let start = 0;
-  channels.forEach(({ key }) => {
-    if (!document.getElementById(`${key}-enabled`).checked) return;
-    segments[key] = squares.slice(start, start + counts[key]);
-    start += counts[key];
-  });
+  isReshuffling = true;
 
-  // Randomly reveal squares based on analyzed percentage
-  channels.forEach(({ key }) => {
-    if (!document.getElementById(`${key}-enabled`).checked) return;
+  // Use requestAnimationFrame for smoother rendering
+  requestAnimationFrame(() => {
+    const totalSquares = gridSize * gridSize;
+    let totalPercentage = 0;
+    const counts = {};
+    const analyzedCounts = {};
+    const segments = {};
 
-    const segment = segments[key];
-    const reveal = new Set();
+    // Calculate counts for each channel
+    channels.forEach(({ key }) => {
+      if (!document.getElementById(`${key}-enabled`).checked) return;
 
-    while (reveal.size < analyzedCounts[key]) {
-      reveal.add(Math.floor(Math.random() * segment.length));
+      const percent = parseInt(document.getElementById(key).value) || 0;
+      const analyzed = parseInt(document.getElementById(`${key}-analyzed`).value) || 0;
+
+      totalPercentage += percent;
+      counts[key] = Math.round((percent / 100) * totalSquares);
+      analyzedCounts[key] = Math.round((analyzed / 100) * counts[key]);
+    });
+
+    // Validate total percentage
+    if (totalPercentage !== 100) {
+      alert('The total percentage of communication channels must equal 100%.');
+      isReshuffling = false;
+      return;
     }
 
-    reveal.forEach(i => segment[i].classList.add('transparent'));
+    // Batch DOM updates
+    const toRemove = [];
+    const toAdd = [];
+
+    // Track which squares should be transparent
+    const transparentSquares = new Set();
+
+    // Assign segments and select random squares
+    let start = 0;
+    channels.forEach(({ key }) => {
+      if (!document.getElementById(`${key}-enabled`).checked) return;
+
+      const count = counts[key];
+      const randomIndices = getRandomIndices(count, analyzedCounts[key]);
+
+      randomIndices.forEach(relativeIndex => {
+        transparentSquares.add(start + relativeIndex);
+      });
+
+      start += count;
+    });
+
+    // Batch class changes
+    squares.forEach((sq, index) => {
+      const shouldBeTransparent = transparentSquares.has(index);
+      const isTransparent = sq.classList.contains('transparent');
+
+      if (shouldBeTransparent && !isTransparent) {
+        toAdd.push(sq);
+      } else if (!shouldBeTransparent && isTransparent) {
+        toRemove.push(sq);
+      }
+    });
+
+    // Apply all changes at once
+    toRemove.forEach(sq => sq.classList.remove('transparent'));
+    toAdd.forEach(sq => sq.classList.add('transparent'));
+
+    isReshuffling = false;
   });
 }
 
