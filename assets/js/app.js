@@ -32,21 +32,42 @@ function createChannelControls() {
 
     group.innerHTML = `
       <div class="channel-header">
-        <span>${name}</span>
-        <label>
+        <span class="channel-name">${name}</span>
+        <label class="toggle-label">
           <input type="checkbox" id="${key}-enabled" checked class="channel-toggle" onchange="toggleChannel('${key}')">
-          <span>Enabled</span>
+          <span>Active</span>
         </label>
       </div>
-      <div class="percentage-section">
-        <label>${name} %:</label>
-        <input type="number" id="${key}" min="0" max="100" value="${percentage}" onchange="syncSlider('${key}')">
-        <input type="range" id="${key}-slider" min="0" max="100" value="${percentage}" oninput="syncInput('${key}')">
-        <input type="checkbox" id="${key}-lock" class="lock" title="Lock Channel %">
+
+      <div class="control-row">
+        <label class="control-label">
+          <span class="label-text">Channel Share</span>
+          <span class="label-help">% of total data</span>
+        </label>
+        <div class="input-group">
+          <button class="stepper-btn" onclick="adjustValue('${key}', -5)" aria-label="Decrease by 5">−</button>
+          <input type="number" id="${key}" min="0" max="100" value="${percentage}" onchange="syncSlider('${key}')" aria-label="${name} percentage">
+          <button class="stepper-btn" onclick="adjustValue('${key}', 5)" aria-label="Increase by 5">+</button>
+          <span class="percentage-symbol">%</span>
+        </div>
+        <input type="range" id="${key}-slider" min="0" max="100" value="${percentage}" oninput="syncInput('${key}')" class="desktop-only" aria-label="${name} slider">
+        <label class="lock-label">
+          <input type="checkbox" id="${key}-lock" class="lock-checkbox" title="Lock this channel's percentage">
+          <span class="lock-icon">🔒</span>
+        </label>
       </div>
-      <div class="analyzed-section">
-        <label>Analyzed %:</label>
-        <input type="number" id="${key}-analyzed" min="0" max="100" value="${analyzed}">
+
+      <div class="control-row">
+        <label class="control-label">
+          <span class="label-text">Visibility</span>
+          <span class="label-help">How much you can see</span>
+        </label>
+        <div class="input-group">
+          <button class="stepper-btn" onclick="adjustAnalyzed('${key}', -5)" aria-label="Decrease visibility by 5">−</button>
+          <input type="number" id="${key}-analyzed" min="0" max="100" value="${analyzed}" aria-label="${name} visibility">
+          <button class="stepper-btn" onclick="adjustAnalyzed('${key}', 5)" aria-label="Increase visibility by 5">+</button>
+          <span class="percentage-symbol">%</span>
+        </div>
       </div>
     `;
 
@@ -68,6 +89,30 @@ function syncSlider(key) {
 function syncInput(key) {
   const value = document.getElementById(`${key}-slider`).value;
   document.getElementById(key).value = value;
+}
+
+/**
+ * Adjust channel percentage value with +/- buttons
+ */
+function adjustValue(key, delta) {
+  const input = document.getElementById(key);
+  const slider = document.getElementById(`${key}-slider`);
+  const currentValue = parseInt(input.value) || 0;
+  const newValue = Math.max(0, Math.min(100, currentValue + delta));
+
+  input.value = newValue;
+  slider.value = newValue;
+}
+
+/**
+ * Adjust analyzed percentage value with +/- buttons
+ */
+function adjustAnalyzed(key, delta) {
+  const input = document.getElementById(`${key}-analyzed`);
+  const currentValue = parseInt(input.value) || 0;
+  const newValue = Math.max(0, Math.min(100, currentValue + delta));
+
+  input.value = newValue;
 }
 
 /**
