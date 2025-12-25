@@ -285,8 +285,8 @@ function reshuffle() {
     const toRemove = [];
     const toAdd = [];
 
-    // Track which squares should be covered
-    const coveredSquares = new Set();
+    // Track which squares should be visible (not covered)
+    const visibleSquares = new Set();
 
     // Assign segments and select random squares
     let start = 0;
@@ -297,20 +297,22 @@ function reshuffle() {
       const randomIndices = getRandomIndices(count, analyzedCounts[key]);
 
       randomIndices.forEach(relativeIndex => {
-        coveredSquares.add(start + relativeIndex);
+        visibleSquares.add(start + relativeIndex);
       });
 
       start += count;
     });
 
-    // Batch class changes
+    // Batch class changes - invert logic so visible squares are NOT covered
     squares.forEach((sq, index) => {
-      const shouldBeCovered = coveredSquares.has(index);
+      const shouldBeVisible = visibleSquares.has(index);
       const isCovered = sq.classList.contains('covered');
 
-      if (shouldBeCovered && !isCovered) {
+      if (!shouldBeVisible && !isCovered) {
+        // Should be covered but isn't - add covered class
         toAdd.push(sq);
-      } else if (!shouldBeCovered && isCovered) {
+      } else if (shouldBeVisible && isCovered) {
+        // Should be visible but is covered - remove covered class
         toRemove.push(sq);
       }
     });
