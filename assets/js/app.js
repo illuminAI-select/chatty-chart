@@ -41,8 +41,8 @@ function createChannelControls() {
 
       <div class="control-row">
         <label class="control-label">
-          <span class="label-text">Channel Share</span>
-          <span class="label-help">% of total data</span>
+          <span class="label-text">Data Volume</span>
+          <span class="label-help">% of total communications</span>
         </label>
         <div class="input-group">
           <button class="stepper-btn" onclick="adjustValue('${key}', -5)" aria-label="Decrease by 5">−</button>
@@ -59,8 +59,8 @@ function createChannelControls() {
 
       <div class="control-row">
         <label class="control-label">
-          <span class="label-text">Visibility</span>
-          <span class="label-help">How much you can see</span>
+          <span class="label-text">Currently Analyzed</span>
+          <span class="label-help">What you can actually see</span>
         </label>
         <div class="input-group">
           <button class="stepper-btn" onclick="adjustAnalyzed('${key}', -5)" aria-label="Decrease visibility by 5">−</button>
@@ -276,7 +276,7 @@ function reshuffle() {
 
     // Validate total percentage
     if (totalPercentage !== 100) {
-      alert('The total percentage of communication channels must equal 100%.');
+      alert('Channel percentages must add up to 100% (currently: ' + totalPercentage + '%). Use "Auto-Balance Channels" to fix this automatically.');
       isReshuffling = false;
       return;
     }

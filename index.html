@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="description" content="Channel-Based Transparency Visualization - Analyze communication channel distribution">
+    <meta name="description" content="Visualize the hidden value in unanalyzed communication data - See what you're missing in calls, email, chat, and more">
     <meta name="theme-color" content="#7c3aed">
-    <title>Channel-Based Transparency</title>
+    <title>Chatty Chart - Uncover Your Hidden Data</title>
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -14,8 +14,8 @@
     <div class="app-container">
         <!-- Sidebar Controls -->
         <aside class="sidebar">
-            <h2>Adjust Your Channels</h2>
-            <p class="help-text">Set how much data comes from each channel, and how much of it you can see through the grid.</p>
+            <h2>Your Communication Channels</h2>
+            <p class="help-text">Adjust these percentages to match your reality. Then see how much valuable data you're currently missing.</p>
 
             <!-- Channel controls will be dynamically generated -->
             <div class="controls" id="controls"></div>
@@ -27,8 +27,8 @@
 
             <!-- Preset Buttons -->
             <div class="preset-section">
-                <h3 class="section-title">Quick Visibility Presets</h3>
-                <p class="section-help">Set how much you can see for all channels</p>
+                <h3 class="section-title">Analytics Coverage Scenarios</h3>
+                <p class="section-help">What if you could analyze this much of your data?</p>
                 <div class="preset-buttons">
                     <button onclick="setAnalyzedPercentage(10)" aria-label="Set visibility to 10%">10%</button>
                     <button onclick="setAnalyzedPercentage(20)" aria-label="Set visibility to 20%">20%</button>
@@ -56,7 +56,7 @@
 
         <!-- Main Content Area -->
         <main class="content">
-            <h2>Visualization</h2>
+            <h2>What You Can See vs. What's Hidden</h2>
             <div class="container">
                 <img
                     src="assets/images/analytics-iceberg.png"
