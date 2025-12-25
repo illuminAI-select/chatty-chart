@@ -21,7 +21,7 @@ chatty-chart/
 │   ├── js/
 │   │   └── app.js         # Application logic
 │   └── images/
-│       └── FinServ - Customer Service & Account Support.png
+│       └── analytics-iceberg.png
 ├── LICENSE
 └── README.md
 ```
