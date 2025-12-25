@@ -285,8 +285,8 @@ function reshuffle() {
     const toRemove = [];
     const toAdd = [];
 
-    // Track which squares should be transparent
-    const transparentSquares = new Set();
+    // Track which squares should be covered
+    const coveredSquares = new Set();
 
     // Assign segments and select random squares
     let start = 0;
@@ -297,7 +297,7 @@ function reshuffle() {
       const randomIndices = getRandomIndices(count, analyzedCounts[key]);
 
       randomIndices.forEach(relativeIndex => {
-        transparentSquares.add(start + relativeIndex);
+        coveredSquares.add(start + relativeIndex);
       });
 
       start += count;
@@ -305,19 +305,25 @@ function reshuffle() {
 
     // Batch class changes
     squares.forEach((sq, index) => {
-      const shouldBeTransparent = transparentSquares.has(index);
-      const isTransparent = sq.classList.contains('transparent');
+      const shouldBeCovered = coveredSquares.has(index);
+      const isCovered = sq.classList.contains('covered');
 
-      if (shouldBeTransparent && !isTransparent) {
+      if (shouldBeCovered && !isCovered) {
         toAdd.push(sq);
-      } else if (!shouldBeTransparent && isTransparent) {
+      } else if (!shouldBeCovered && isCovered) {
         toRemove.push(sq);
       }
     });
 
     // Apply all changes at once
-    toRemove.forEach(sq => sq.classList.remove('transparent'));
-    toAdd.forEach(sq => sq.classList.add('transparent'));
+    toRemove.forEach(sq => sq.classList.remove('covered'));
+    toAdd.forEach(sq => sq.classList.add('covered'));
+
+    // Scroll to top of visualization container
+    const container = document.getElementById('visualization-container');
+    if (container) {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     isReshuffling = false;
   });
