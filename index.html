@@ -14,7 +14,17 @@
     <div class="app-container">
         <!-- Main Content Area -->
         <main class="content">
-            <h2>What You Can See vs. What's Hidden</h2>
+            <div class="header-with-help">
+                <h2>What You Can See vs. What's Hidden</h2>
+                <button class="help-button" id="helpButton" aria-label="Open help documentation">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Help
+                </button>
+            </div>
             <div class="container" id="visualization-container">
                 <img
                     src="assets/images/analytics-iceberg.png"
@@ -67,6 +77,87 @@
                 </button>
             </div>
         </aside>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal" aria-hidden="true" role="dialog" aria-labelledby="helpModalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="helpModalTitle">How to Use Chatty Chart</h2>
+                <button class="modal-close" id="closeModal" aria-label="Close help modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <section class="help-section">
+                    <h3>What is Chatty Chart?</h3>
+                    <p>Chatty Chart is a powerful visualization tool that reveals the <strong>hidden value</strong> in your unanalyzed communication data. Most organizations analyze only a tiny fraction of their communications—this tool helps you see exactly what you're missing.</p>
+                    <p>The iceberg visualization shows:</p>
+                    <ul>
+                        <li><strong>Black squares</strong> = Unanalyzed data (what you're missing)</li>
+                        <li><strong>Transparent squares</strong> = Analyzed data (what you can see)</li>
+                    </ul>
+                </section>
+
+                <section class="help-section">
+                    <h3>Getting Started</h3>
+                    <ol>
+                        <li><strong>Review the defaults:</strong> The tool starts with typical business communication patterns (45% calls, 25% email, etc.)</li>
+                        <li><strong>Customize to your reality:</strong> Adjust the sliders to match your actual communication breakdown</li>
+                        <li><strong>Set what's analyzed:</strong> Update the "Currently Analyzed" percentages to reflect what you can actually see today</li>
+                        <li><strong>Watch the visualization:</strong> The grid updates automatically to show your data coverage gap</li>
+                    </ol>
+                </section>
+
+                <section class="help-section">
+                    <h3>Channel Controls</h3>
+                    <p>Each communication channel has two key settings:</p>
+                    <ul>
+                        <li><strong>% of Total Communications:</strong> How much of your total data volume comes from this channel</li>
+                        <li><strong>Currently Analyzed:</strong> What percentage of this channel's data you can actually see and analyze</li>
+                    </ul>
+                    <p><strong>Tips:</strong></p>
+                    <ul>
+                        <li>Use the <strong>+/−</strong> buttons for quick 5% adjustments</li>
+                        <li>Click the <strong>lock icon</strong> to prevent a channel from being rebalanced</li>
+                        <li>Toggle the <strong>switch</strong> to enable/disable entire channels</li>
+                        <li>Click the <strong>▼</strong> arrow to collapse/expand sections</li>
+                    </ul>
+                </section>
+
+                <section class="help-section">
+                    <h3>Quick Actions</h3>
+                    <ul>
+                        <li><strong>Analytics Coverage Scenarios (10%-100%):</strong> Instantly set all channels to show what X% total coverage would look like</li>
+                        <li><strong>Auto-Balance Channels:</strong> Automatically distribute percentages across unlocked channels to total 100%</li>
+                        <li><strong>Update Visualization:</strong> Force a new random distribution of squares in the grid</li>
+                        <li><strong>Reset to Original Values:</strong> Restore all settings to defaults</li>
+                    </ul>
+                </section>
+
+                <section class="help-section">
+                    <h3>Important Notes</h3>
+                    <ul>
+                        <li>Total channel percentages must equal <strong>100%</strong></li>
+                        <li>If you get an error, use <strong>Auto-Balance Channels</strong> to fix distribution</li>
+                        <li>The visualization uses 10,000 squares (100×100 grid) for precision</li>
+                        <li>Changes update automatically with a short delay to prevent lag</li>
+                    </ul>
+                </section>
+
+                <section class="help-section">
+                    <h3>Use Cases</h3>
+                    <p>Chatty Chart is perfect for:</p>
+                    <ul>
+                        <li>Sales presentations demonstrating the analytics gap</li>
+                        <li>Client discovery meetings</li>
+                        <li>ROI demonstrations for analytics investments</li>
+                        <li>Stakeholder education about data blind spots</li>
+                    </ul>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button" id="closeModalButton">Got It!</button>
+            </div>
+        </div>
     </div>
 
     <!-- Application JavaScript -->
