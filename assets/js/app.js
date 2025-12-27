@@ -31,15 +31,20 @@ function setInitialState() {
     const slider = document.getElementById(`${key}-slider`);
 
     if (key === 'calls') {
-      // Set 'calls' to active with 100% volume
+      // Set 'calls' to active with 100% volume and expanded
       enabledCheckbox.checked = true;
       input.value = 100;
       slider.value = 100;
     } else {
-      // Set all other channels to inactive with 0% volume
+      // Set all other channels to inactive with 0% volume and collapsed
       enabledCheckbox.checked = false;
       input.value = 0;
       slider.value = 0;
+      // Collapse inactive channels
+      const group = document.querySelector(`[data-channel="${key}"]`);
+      if (group) {
+        group.classList.add('collapsed');
+      }
     }
   });
 }
@@ -53,6 +58,7 @@ function createChannelControls() {
   channels.forEach(({ key, name, percentage, analyzed }) => {
     const group = document.createElement('div');
     group.classList.add('channel-group');
+    group.setAttribute('data-channel', key);
 
     group.innerHTML = `
       <div class="channel-header">
@@ -149,9 +155,20 @@ function adjustAnalyzed(key, delta) {
  */
 function toggleChannel(key) {
   const enabled = document.getElementById(`${key}-enabled`).checked;
+  const group = document.querySelector(`[data-channel="${key}"]`);
+
   if (!enabled) {
     document.getElementById(key).value = 0;
     document.getElementById(`${key}-slider`).value = 0;
+    // Collapse inactive channels
+    if (group) {
+      group.classList.add('collapsed');
+    }
+  } else {
+    // Expand active channels
+    if (group) {
+      group.classList.remove('collapsed');
+    }
   }
   // Trigger automatic volume splitting when active status changes
   autoSplitVolume();
@@ -470,12 +487,20 @@ function initializeHelpModal() {
     closeModalButton.addEventListener('click', closeHelpModal);
   }
 
-  // Close modal when clicking outside the modal content
+  // Close modal when clicking on the backdrop
   if (modal) {
     modal.addEventListener('click', (event) => {
       if (event.target === modal) {
         closeHelpModal();
       }
+    });
+  }
+
+  // Prevent modal content clicks from bubbling to the backdrop
+  const modalContent = modal ? modal.querySelector('.modal-content') : null;
+  if (modalContent) {
+    modalContent.addEventListener('click', (event) => {
+      event.stopPropagation();
     });
   }
 
