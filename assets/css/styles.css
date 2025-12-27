@@ -551,6 +551,17 @@ button:active {
     display: block;
   }
 
+  .help-button {
+    padding: 0.75rem 1rem;
+    font-size: 14px;
+    min-height: auto;
+  }
+
+  .help-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
   .control-row {
     position: relative;
   }
@@ -652,47 +663,46 @@ button:active {
   }
 }
 
-/* Header with Help Button */
-.header-with-help {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  max-width: 95vmin;
-  margin-bottom: 0.5rem;
-}
-
+/* Help Button */
 .help-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  font-size: 14px;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.25rem;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
-  background: var(--surface-elevated);
+  background: linear-gradient(135deg, #334155 0%, #475569 100%);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  min-height: auto;
-  width: auto;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  min-height: 48px;
+  width: 100%;
   white-space: nowrap;
+  margin-bottom: 1.5rem;
 }
 
 .help-button:hover {
-  background: var(--primary-color);
+  background: var(--primary-gradient);
   border-color: var(--primary-color);
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
 }
 
 .help-button svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
+  display: block;
+}
+
+.help-button span {
+  display: block;
+  line-height: 1;
 }
 
 /* Modal Styles */
@@ -890,19 +900,15 @@ button:active {
     height: 98vmin;
   }
 
-  .header-with-help {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .help-button {
-    font-size: 13px;
-    padding: 0.5rem 0.875rem;
+    font-size: 14px;
+    padding: 0.75rem 1rem;
+    min-height: 44px;
   }
 
   .help-button svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
 
   .modal-content {
