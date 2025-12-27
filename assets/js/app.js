@@ -430,9 +430,73 @@ function reshuffle() {
   });
 }
 
+/**
+ * Help Modal Functions
+ */
+function openHelpModal() {
+  const modal = document.getElementById('helpModal');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  // Prevent body scrolling when modal is open
+  document.body.style.overflow = 'hidden';
+}
+
+function closeHelpModal() {
+  const modal = document.getElementById('helpModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  // Restore body scrolling
+  document.body.style.overflow = '';
+}
+
+function initializeHelpModal() {
+  const helpButton = document.getElementById('helpButton');
+  const closeButton = document.getElementById('closeModal');
+  const closeModalButton = document.getElementById('closeModalButton');
+  const modal = document.getElementById('helpModal');
+
+  // Open modal when help button is clicked
+  if (helpButton) {
+    helpButton.addEventListener('click', openHelpModal);
+  }
+
+  // Close modal when close button is clicked
+  if (closeButton) {
+    closeButton.addEventListener('click', closeHelpModal);
+  }
+
+  // Close modal when "Got It!" button is clicked
+  if (closeModalButton) {
+    closeModalButton.addEventListener('click', closeHelpModal);
+  }
+
+  // Close modal when clicking outside the modal content
+  if (modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeHelpModal();
+      }
+    });
+  }
+
+  // Close modal when ESC key is pressed
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      const modal = document.getElementById('helpModal');
+      if (modal && modal.classList.contains('show')) {
+        closeHelpModal();
+      }
+    }
+  });
+}
+
 // Initialize app when DOM is loaded
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp);
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+    initializeHelpModal();
+  });
 } else {
   initializeApp();
+  initializeHelpModal();
 }
