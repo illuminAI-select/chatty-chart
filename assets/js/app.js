@@ -18,6 +18,30 @@ const channels = [
 function initializeApp() {
   createChannelControls();
   initializeGrid();
+  setInitialState();
+}
+
+/**
+ * Set initial state: only 'calls' active with 100% volume
+ */
+function setInitialState() {
+  channels.forEach(({ key }) => {
+    const enabledCheckbox = document.getElementById(`${key}-enabled`);
+    const input = document.getElementById(key);
+    const slider = document.getElementById(`${key}-slider`);
+
+    if (key === 'calls') {
+      // Set 'calls' to active with 100% volume
+      enabledCheckbox.checked = true;
+      input.value = 100;
+      slider.value = 100;
+    } else {
+      // Set all other channels to inactive with 0% volume
+      enabledCheckbox.checked = false;
+      input.value = 0;
+      slider.value = 0;
+    }
+  });
 }
 
 /**
@@ -32,41 +56,46 @@ function createChannelControls() {
 
     group.innerHTML = `
       <div class="channel-header">
-        <span class="channel-name">${name}</span>
+        <div class="channel-header-left">
+          <button class="collapse-btn" onclick="toggleCollapse('${key}')" aria-label="Toggle section">▼</button>
+          <span class="channel-name">${name}</span>
+        </div>
         <label class="toggle-label">
           <input type="checkbox" id="${key}-enabled" checked class="channel-toggle" onchange="toggleChannel('${key}')">
           <span>Active</span>
         </label>
       </div>
 
-      <div class="control-row">
-        <label class="control-label">
-          <span class="label-text">Data Volume</span>
-          <span class="label-help">% of total communications</span>
-        </label>
-        <div class="input-group">
-          <button class="stepper-btn" onclick="adjustValue('${key}', -5)" aria-label="Decrease by 5">−</button>
-          <input type="number" id="${key}" min="0" max="100" value="${percentage}" onchange="syncSlider('${key}')" aria-label="${name} percentage">
-          <button class="stepper-btn" onclick="adjustValue('${key}', 5)" aria-label="Increase by 5">+</button>
-          <span class="percentage-symbol">%</span>
+      <div class="channel-content">
+        <div class="control-row">
+          <label class="control-label">
+            <span class="label-text">Data Volume</span>
+            <span class="label-help">% of total communications</span>
+          </label>
+          <div class="input-group">
+            <button class="stepper-btn" onclick="adjustValue('${key}', -5)" aria-label="Decrease by 5">−</button>
+            <input type="number" id="${key}" min="0" max="100" value="${percentage}" onchange="syncSlider('${key}')" aria-label="${name} percentage">
+            <button class="stepper-btn" onclick="adjustValue('${key}', 5)" aria-label="Increase by 5">+</button>
+            <span class="percentage-symbol">%</span>
+          </div>
+          <input type="range" id="${key}-slider" min="0" max="100" value="${percentage}" oninput="syncInput('${key}')" class="desktop-only" aria-label="${name} slider">
+          <label class="lock-label">
+            <input type="checkbox" id="${key}-lock" class="lock-checkbox" onchange="handleLockChange('${key}')" title="Lock this channel's percentage">
+            <span class="lock-icon">🔒</span>
+          </label>
         </div>
-        <input type="range" id="${key}-slider" min="0" max="100" value="${percentage}" oninput="syncInput('${key}')" class="desktop-only" aria-label="${name} slider">
-        <label class="lock-label">
-          <input type="checkbox" id="${key}-lock" class="lock-checkbox" title="Lock this channel's percentage">
-          <span class="lock-icon">🔒</span>
-        </label>
-      </div>
 
-      <div class="control-row">
-        <label class="control-label">
-          <span class="label-text">Currently Analyzed</span>
-          <span class="label-help">What you can actually see</span>
-        </label>
-        <div class="input-group">
-          <button class="stepper-btn" onclick="adjustAnalyzed('${key}', -5)" aria-label="Decrease visibility by 5">−</button>
-          <input type="number" id="${key}-analyzed" min="0" max="100" value="${analyzed}" aria-label="${name} visibility">
-          <button class="stepper-btn" onclick="adjustAnalyzed('${key}', 5)" aria-label="Increase visibility by 5">+</button>
-          <span class="percentage-symbol">%</span>
+        <div class="control-row">
+          <label class="control-label">
+            <span class="label-text">Currently Analyzed</span>
+            <span class="label-help">What you can actually see</span>
+          </label>
+          <div class="input-group">
+            <button class="stepper-btn" onclick="adjustAnalyzed('${key}', -5)" aria-label="Decrease visibility by 5">−</button>
+            <input type="number" id="${key}-analyzed" min="0" max="100" value="${analyzed}" aria-label="${name} visibility">
+            <button class="stepper-btn" onclick="adjustAnalyzed('${key}', 5)" aria-label="Increase visibility by 5">+</button>
+            <span class="percentage-symbol">%</span>
+          </div>
         </div>
       </div>
     `;
@@ -124,6 +153,76 @@ function toggleChannel(key) {
     document.getElementById(key).value = 0;
     document.getElementById(`${key}-slider`).value = 0;
   }
+  // Trigger automatic volume splitting when active status changes
+  autoSplitVolume();
+}
+
+/**
+ * Toggle collapse/expand state for a channel section
+ */
+function toggleCollapse(key) {
+  const groups = document.querySelectorAll('.channel-group');
+  groups.forEach(group => {
+    const header = group.querySelector('.channel-header');
+    const nameElement = header.querySelector('.channel-name');
+    if (nameElement && nameElement.textContent === channels.find(c => c.key === key).name) {
+      group.classList.toggle('collapsed');
+    }
+  });
+}
+
+/**
+ * Handle lock change event
+ */
+function handleLockChange(key) {
+  // Trigger automatic volume splitting when lock status changes
+  autoSplitVolume();
+}
+
+/**
+ * Automatically split volume between unlocked and active channels
+ */
+function autoSplitVolume() {
+  let lockedTotal = 0;
+  const unlocked = [];
+
+  channels.forEach(({ key }) => {
+    const enabled = document.getElementById(`${key}-enabled`).checked;
+    const locked = document.getElementById(`${key}-lock`).checked;
+    const input = document.getElementById(key);
+    const slider = document.getElementById(`${key}-slider`);
+    const currentValue = parseInt(input.value) || 0;
+
+    if (!enabled) {
+      // Inactive channels get 0%
+      input.value = 0;
+      slider.value = 0;
+    } else if (locked) {
+      // Locked channels keep their value
+      lockedTotal += currentValue;
+    } else {
+      // Track unlocked active channels
+      unlocked.push({ key, input, slider });
+    }
+  });
+
+  // Calculate remaining percentage for unlocked channels
+  const remaining = 100 - lockedTotal;
+
+  if (remaining < 0 || unlocked.length === 0) {
+    return; // Can't split if over 100% or no unlocked channels
+  }
+
+  // Distribute remaining percentage equally among unlocked channels
+  const base = Math.floor(remaining / unlocked.length);
+  let leftover = remaining % unlocked.length;
+
+  unlocked.forEach(({ input, slider }) => {
+    const value = base + (leftover > 0 ? 1 : 0);
+    input.value = value;
+    slider.value = value;
+    if (leftover > 0) leftover--;
+  });
 }
 
 /**

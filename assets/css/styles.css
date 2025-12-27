@@ -118,6 +118,14 @@ h3.section-title {
   transform: translateY(-1px);
 }
 
+.channel-group.collapsed .channel-content {
+  display: none;
+}
+
+.channel-content {
+  display: block;
+}
+
 .channel-header {
   display: flex;
   justify-content: space-between;
@@ -127,6 +135,37 @@ h3.section-title {
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border-color);
+}
+
+.channel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+  min-height: auto;
+  font-size: 14px;
+  transition: transform 0.3s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-btn:hover {
+  color: var(--text-primary);
+  transform: none;
+  box-shadow: none;
+}
+
+.channel-group.collapsed .collapse-btn {
+  transform: rotate(-90deg);
 }
 
 .channel-name {
