@@ -421,6 +421,12 @@ function reshuffle() {
       sq.classList.toggle('covered', shouldBeCovered);
     });
 
+    // Scroll to top of visualization container
+    const container = document.getElementById('visualization-container');
+    if (container) {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     isReshuffling = false;
   });
 }
