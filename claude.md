@@ -112,7 +112,7 @@ channels = [
 **Styling Patterns:**
 - Variables: None (could be modernized with CSS custom properties)
 - Color scheme: Blue primary (#007bff), light background (#f4f4f9)
-- Transitions: 0.3s ease for square transparency changes
+- Transitions: Removed for performance (animating 10,000 squares caused freezing)
 
 ## Development Considerations
 
@@ -121,7 +121,6 @@ channels = [
 - Extract JavaScript to separate file for better organization
 - Add data persistence (localStorage)
 - Export functionality for visualization
-- More sophisticated animation options
 - Accessibility improvements (ARIA labels, keyboard navigation)
 
 ### Known Limitations
