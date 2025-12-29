@@ -463,39 +463,36 @@ button:active {
   margin-top: 1rem;
 }
 
-/* Update Visualization Button */
-.update-viz-btn {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
+/* Update Visualization Button - Standalone */
+.update-viz-btn-standalone {
+  margin: 1.5rem auto 0;
   padding: 0.875rem 1.5rem;
   font-size: 15px;
   font-weight: 600;
   color: #fff;
   background: var(--primary-gradient);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(139, 92, 246, 0.3);
   border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: center;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   min-height: 48px;
   width: auto;
-  backdrop-filter: blur(8px);
+  max-width: 300px;
+  display: block;
   white-space: nowrap;
 }
 
-.update-viz-btn:hover {
-  transform: translateX(-50%) translateY(-4px);
-  box-shadow: 0 12px 24px rgba(124, 58, 237, 0.4);
+.update-viz-btn-standalone:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(124, 58, 237, 0.5);
   background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
 }
 
-.update-viz-btn:active {
-  transform: translateX(-50%) translateY(-2px);
+.update-viz-btn-standalone:active {
+  transform: translateY(0);
 }
 
 .image {
@@ -935,11 +932,12 @@ button:active {
     height: 98vmin;
   }
 
-  .update-viz-btn {
-    bottom: 1rem;
+  .update-viz-btn-standalone {
+    margin-top: 1rem;
     padding: 0.75rem 1.25rem;
     font-size: 14px;
     min-height: 44px;
+    max-width: 280px;
   }
 
   .help-button {

@@ -397,10 +397,6 @@ function reshuffle() {
       return;
     }
 
-    // Batch DOM updates
-    const toRemove = [];
-    const toAdd = [];
-
     // Track which squares should be visible (not covered)
     const visibleSquares = new Set();
 
@@ -419,29 +415,11 @@ function reshuffle() {
       start += count;
     });
 
-    // Batch class changes - invert logic so visible squares are NOT covered
+    // Efficiently update classes using toggle with second parameter
     squares.forEach((sq, index) => {
-      const shouldBeVisible = visibleSquares.has(index);
-      const isCovered = sq.classList.contains('covered');
-
-      if (!shouldBeVisible && !isCovered) {
-        // Should be covered but isn't - add covered class
-        toAdd.push(sq);
-      } else if (shouldBeVisible && isCovered) {
-        // Should be visible but is covered - remove covered class
-        toRemove.push(sq);
-      }
+      const shouldBeCovered = !visibleSquares.has(index);
+      sq.classList.toggle('covered', shouldBeCovered);
     });
-
-    // Apply all changes at once
-    toRemove.forEach(sq => sq.classList.remove('covered'));
-    toAdd.forEach(sq => sq.classList.add('covered'));
-
-    // Scroll to top of visualization container
-    const container = document.getElementById('visualization-container');
-    if (container) {
-      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
 
     isReshuffling = false;
   });
