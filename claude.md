@@ -113,6 +113,7 @@ channels = [
 - Variables: None (could be modernized with CSS custom properties)
 - Color scheme: Blue primary (#007bff), light background (#f4f4f9)
 - Transitions: Removed for performance (animating 10,000 squares caused freezing)
+- Auto-scroll: Scrolls to visualization top on update for better UX
 
 ## Development Considerations
 
